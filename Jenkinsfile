@@ -1,14 +1,14 @@
 
 podTemplate(containers: [containerTemplate(image: 'docker:17.12.0-ce-dind', name: 'docker', privileged: true, ttyEnabled: true)]){
 	podTemplate(containers: [containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-kubectl:v1.19.11', command: 'cat', ttyEnabled: true)]){
+         podTemplate(containers: [containerTemplate(image: 'maven:3.8.1-jdk-8', name: 'maven', command: 'cat', ttyEnabled: true)]) {
      node (POD_LABEL) {
         stage('Get a Spint-boot-UI project') {
-              sh "ls -l"
-           // git 'https://github.com/bajajamit09/spring-anglular-ui.git'
-            container('docker') {
+           git 'https://github.com/bajajamit09/spring-anglular-ui.git'
+            container('maven') {
 
                 stage('Build Image') {
-                   sh "ls -l"
+                   sh "pwd && ls -l"
                    sh "docker build -t k8workshopregistry.azurecr.io/spring-ui ."
                    sh "docker images"
                 }
@@ -31,4 +31,5 @@ podTemplate(containers: [containerTemplate(image: 'docker:17.12.0-ce-dind', name
             }
         }
     }
+}
 }
