@@ -20,7 +20,7 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
 )
 {
   node ('prismaCloud-example-builder') {
-
+     sh "ls -l /var/run/docker.sock"
     stage ('Pull image') { // See 4
       container('alpine') {
         sh "ls -l /var/run/docker.sock"
