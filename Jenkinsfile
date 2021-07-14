@@ -23,6 +23,8 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
 
     stage ('Pull image') { // See 4
       container('alpine') {
+        sh "ls -l /var/run/docker.sock"
+         sh "docker login -u k8workshopregistry k8workshopregistry.azurecr.io -p RnQA8Y+AMxdNBT3jbNLINocGdCMGVd5R"
         sh " curl --unix-socket /var/run/docker.sock -X POST 'http:/v1.24/images/create?fromImage=nginx:stable-alpine' "
       }
     }
