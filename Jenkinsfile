@@ -33,7 +33,7 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
              //       dockerAddress: 'unix:///var/run/docker.sock',
                     image: 'nginx:stable-alpine',
                     resultsFile: 'prisma-cloud-scan-results.xml',
-                    project: '',
+             //       project: '',
                     dockerAddress: 'unix:///var/run/docker.sock',
                     ignoreImageBuildTime: true,
                     key: '',
