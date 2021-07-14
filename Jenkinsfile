@@ -40,8 +40,8 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
                     logLevel: 'info',
                     podmanPath: '',
                     project: '',
-                    resultsFile: 'prisma-cloud-scan-results.json',
-                    ignoreImageBuildTime:true
+              //      resultsFile: 'prisma-cloud-scan-results.json',
+                //    ignoreImageBuildTime:true
     }
 
     stage ('Prisma Cloud publish') {
