@@ -42,7 +42,7 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
                     project: '',
               //      resultsFile: 'prisma-cloud-scan-results.json',
                 //    ignoreImageBuildTime:true
-    }
+ //   }
 
     stage ('Prisma Cloud publish') {
         twistlockPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
