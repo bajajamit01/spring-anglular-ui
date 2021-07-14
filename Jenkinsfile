@@ -23,7 +23,7 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
 
     stage ('Pull image') { // See 4
       container('alpine') {
-        sh " curl --unix-socket /var/run/docker.sock -X POST "http:/v1.24/images/create?fromImage=nginx:stable-alpine" "
+        sh " curl --unix-socket /var/run/docker.sock -X POST 'http:/v1.24/images/create?fromImage=nginx:stable-alpine' "
       }
     }
 
