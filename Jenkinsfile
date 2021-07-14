@@ -30,7 +30,7 @@ podTemplate(label: 'prismaCloud-example-builder', // See 1
     stage ('Prisma Cloud scan') { // See 6
         prismaCloudImageScan ca: '',
                     cert: '',
-                    dockerAddress: 'unix:///var/run/docker.sock',
+             //       dockerAddress: 'unix:///var/run/docker.sock',
                     image: 'nginx:stable-alpine',
                     resultsFile: 'prisma-cloud-scan-results.xml',
                     project: '',
