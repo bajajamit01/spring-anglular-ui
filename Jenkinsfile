@@ -1,33 +1,54 @@
+#!/usr/bin/groovy
 
-podTemplate(containers: [containerTemplate(image: 'docker:17.12.0-ce-dind', name: 'docker', privileged: true, ttyEnabled: true)]){
-	podTemplate(containers: [containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-kubectl:v1.19.11', command: 'cat', ttyEnabled: true)]){
-         podTemplate(containers: [containerTemplate(image: 'maven:3.8.1-jdk-8', name: 'maven', command: 'cat', ttyEnabled: true)]) {
-     node (POD_LABEL) {
-        stage('Get a Spint-boot-UI project') {
-           git 'https://github.com/bajajamit09/spring-anglular-ui.git'
-            container('docker') {
+podTemplate(label: 'prismaCloud-example-builder', // See 1
+  containers: [
+    containerTemplate(
+      name: 'jnlp',
+      image: 'jenkinsci/jnlp-slave:3.10-1-alpine',
+      args: '${computer.jnlpmac} ${computer.name}'
+    ),
+    containerTemplate(
+      name: 'alpine',
+      image: 'twistian/alpine:latest',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+  ],
+  volumes: [ // See 2
+    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), // See 3
+  ]
+)
+{
+  node ('prismaCloud-example-builder') {
 
-                stage('Build Image') {
-                   sh "pwd && ls -l"
-                   sh "docker build -t k8workshopregistry.azurecr.io/spring-ui ."
-                   sh "docker images"
-                }
-
-                stage('Build Docker Image') {
-                sh "docker login -u k8workshopregistry k8workshopregistry.azurecr.io -p RnQA8Y+AMxdNBT3jbNLINocGdCMGVd5R"
-                sh "docker push k8workshopregistry.azurecr.io/spring-ui"
-//	      dockerImage = docker.build("hello-world-java")
-	}
+    stage ('Pull image') { // See 4
+      container('alpine') {
+        sh """
+        curl --unix-socket /var/run/docker.sock \ // See 5
+             -X POST "http:/v1.24/images/create?fromImage=nginx:stable-alpine"
+        """
       }
-             container('helm'){
-              stage('Deploy image'){
-              sh "kubectl apply -f ./spring-boot-ui.yaml"
-              sh "kubectl get pods"
-              }
-	    }
-
-            }
-        }
     }
-}
+
+    stage ('Prisma Cloud scan') { // See 6
+        prismaCloudImageScan ca: '',
+                    cert: '',
+                    dockerAddress: 'unix:///var/run/docker.sock',
+                    image: 'nginx:stable-alpine',
+                    resultsFile: 'prisma-cloud-scan-results.xml',
+                    project: '',
+                    dockerAddress: 'unix:///var/run/docker.sock',
+                    ignoreImageBuildTime: true,
+                    key: '',
+                    logLevel: 'info',
+                    podmanPath: '',
+                    project: '',
+                    resultsFile: 'prisma-cloud-scan-results.json',
+                    ignoreImageBuildTime:true
+    }
+
+    stage ('Prisma Cloud publish') {
+        twistlockPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
+    }
+  }
 }
